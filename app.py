@@ -6,7 +6,147 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client
 
-st.set_page_config(page_title="Control de pagos", page_icon="💳", layout="wide")
+st.set_page_config(page_title="Control de pagos", page_icon="💳", layout="centered")
+
+
+def apply_style():
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+        #MainMenu, footer { visibility: hidden; }
+        .stApp {
+            background: radial-gradient(circle at 15% 0%, #241c40 0%, #14101f 45%, #0f0c1a 100%);
+        }
+        .block-container { padding-top: 2rem; padding-bottom: 3rem; max-width: 700px; }
+
+        h1, h2, h3, h4 { color: #f5f3ff; letter-spacing: -0.01em; }
+        p, span, label, [data-testid="stMarkdownContainer"] { color: #ece9f7; }
+        [data-testid="stCaptionContainer"] { color: #a79fc9; }
+        hr { margin: 1.1rem 0; border-color: rgba(255,255,255,0.08); }
+
+        div.stButton > button, div[data-testid="stFormSubmitButton"] > button,
+        div.stDownloadButton > button {
+            border-radius: 12px;
+            min-height: 3rem;
+            font-weight: 600;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #f5f3ff;
+            transition: transform 0.05s ease-in-out;
+        }
+        div.stButton > button:active, div[data-testid="stFormSubmitButton"] > button:active {
+            transform: scale(0.98);
+        }
+        div.stButton > button[kind="primary"], div[data-testid="stFormSubmitButton"] > button[kind="primary"] {
+            background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+            border: none;
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+        }
+        input, textarea, select { font-size: 1rem !important; }
+        div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="base-input"] {
+            background: rgba(255,255,255,0.05) !important;
+            border-radius: 10px !important;
+        }
+
+        [data-testid="stMetric"] {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 55%, #4338ca 100%);
+            padding: 1.3rem 1.4rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 24px rgba(76, 29, 149, 0.35);
+        }
+        [data-testid="stMetricLabel"] { color: #e4defc !important; text-transform: uppercase; font-size: 0.72rem !important; letter-spacing: 0.06em; }
+        [data-testid="stMetricValue"], [data-testid="stMetricDelta"] { color: #ffffff !important; }
+        [data-testid="stMetricValue"] { font-size: 1.9rem; font-weight: 800; }
+
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin: 0.15rem 0.25rem 0.15rem 0;
+        }
+        .pill-green { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+        .pill-amber { background: rgba(251, 191, 36, 0.15); color: #fcd34d; }
+        .pill-gray { background: rgba(255,255,255,0.08); color: #cbd2e1; }
+
+        .avatar {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2.6rem; height: 2.6rem; border-radius: 999px;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            color: #fff; font-weight: 700; font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+        .hero-icon {
+            width: 4rem; height: 4rem; margin: 1rem auto 0.6rem auto; border-radius: 999px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.9rem;
+            background: linear-gradient(135deg, #a78bfa, #4f46e5);
+            box-shadow: 0 8px 22px rgba(99, 102, 241, 0.4);
+        }
+
+        .credit-card {
+            max-width: 360px; margin: 1.4rem auto 1.6rem auto; aspect-ratio: 1.586 / 1;
+            border-radius: 18px; padding: 1.3rem 1.5rem;
+            background: linear-gradient(135deg, #f7e7b0 0%, #e0bd6e 28%, #c79a3e 52%, #9c7423 76%, #6b4f16 100%);
+            box-shadow: 0 18px 38px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            color: #3b2b0a;
+        }
+        .credit-card::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(120deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 42%);
+        }
+        .credit-card .cc-row { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; }
+        .credit-card .cc-brand { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.02em; }
+        .credit-card .cc-sub { font-size: 0.62rem; letter-spacing: 0.14em; opacity: 0.75; margin-top: 0.1rem; }
+        .credit-card .cc-chip {
+            width: 2.3rem; height: 1.7rem; border-radius: 5px; z-index: 1;
+            background: linear-gradient(135deg, #fff3cf, #b8860b);
+            border: 1px solid rgba(0,0,0,0.15);
+        }
+        .credit-card .cc-number { font-size: 1.05rem; letter-spacing: 0.14em; font-weight: 600; z-index: 1; }
+        .credit-card .cc-foot { display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.85; z-index: 1; }
+
+        .stTabs [data-baseweb="tab-list"] { gap: 0.4rem; background: rgba(255,255,255,0.04); padding: 0.3rem; border-radius: 14px; }
+        .stTabs [data-baseweb="tab"] { border-radius: 10px; font-weight: 600; color: #b9b2d9; }
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(135deg, #8b5cf6, #4f46e5) !important;
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 640px) {
+            .block-container { padding-left: 1rem; padding-right: 1rem; }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def status_badge(text):
+    tone = {
+        "Contabilizado": "pill-green", "Reembolsado": "pill-green",
+        "Pendiente de contabilizar": "pill-amber", "Pendiente de reembolsar": "pill-amber",
+        "No aplica": "pill-gray",
+    }.get(text, "pill-gray")
+    return f'<span class="status-pill {tone}">{text}</span>'
+
+
+def avatar(name):
+    initial = (name or "?").strip()[:1].upper()
+    return f'<span class="avatar">{initial}</span>'
 
 
 def configured():
@@ -28,22 +168,40 @@ def get_profile(user_id):
 
 
 def login_screen():
-    left, center, right = st.columns([1, 1.25, 1])
-    with center:
-        st.title("Control de pagos personales")
-        st.caption("Registro y conciliación de pagos realizados desde cuentas personales.")
+    st.markdown(
+        """
+        <div class="credit-card">
+            <div class="cc-row">
+                <div>
+                    <div class="cc-brand">ISTHO S.A.S.</div>
+                    <div class="cc-sub">FINANCIERA</div>
+                </div>
+                <div style="font-size:1.4rem; z-index:1;">💳</div>
+            </div>
+            <div class="cc-chip"></div>
+            <div class="cc-number">•••• •••• •••• 0000</div>
+            <div class="cc-foot">
+                <span>CONTROL DE PAGOS</span>
+                <span>PERSONALES</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.write("")
+    with st.container(border=True):
         with st.form("login"):
             email = st.text_input("Correo electrónico")
             password = st.text_input("Contraseña", type="password")
-            submitted = st.form_submit_button("Ingresar", use_container_width=True)
-        if submitted:
-            try:
-                session = auth_client().auth.sign_in_with_password({"email": email.strip(), "password": password})
-                profile = get_profile(session.user.id)
-                st.session_state.profile = profile
-                st.rerun()
-            except Exception:
-                st.error("No fue posible iniciar sesión. Verifica el correo y la contraseña.")
+            submitted = st.form_submit_button("Ingresar", type="primary", use_container_width=True)
+    if submitted:
+        try:
+            session = auth_client().auth.sign_in_with_password({"email": email.strip(), "password": password})
+            profile = get_profile(session.user.id)
+            st.session_state.profile = profile
+            st.rerun()
+        except Exception:
+            st.error("No fue posible iniciar sesión. Verifica el correo y la contraseña.")
 
 
 def initial_setup_needed():
@@ -52,33 +210,33 @@ def initial_setup_needed():
 
 
 def initial_setup_screen():
-    left, center, right = st.columns([1, 1.25, 1])
-    with center:
-        st.title("Crear administrador inicial")
-        st.info("Este paso aparece una sola vez. Después, el acceso se realiza desde la pantalla de inicio de sesión.")
+    st.markdown("<div class='hero-icon'>🔐</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; margin-top:0;'>Crear administrador inicial</h2>", unsafe_allow_html=True)
+    st.info("Este paso aparece una sola vez. Después, el acceso se realiza desde la pantalla de inicio de sesión.")
+    with st.container(border=True):
         with st.form("initial_setup"):
             name = st.text_input("Nombre completo")
             email = st.text_input("Correo electrónico")
             password = st.text_input("Contraseña", type="password", help="Mínimo 8 caracteres.")
             setup_code = st.text_input("Código de configuración", type="password")
-            submitted = st.form_submit_button("Crear administrador", use_container_width=True)
-        if submitted:
-            if not hmac.compare_digest(setup_code, st.secrets["SETUP_CODE"]):
-                st.error("El código de configuración no es correcto.")
-                return
-            if not name.strip() or "@" not in email or len(password) < 8:
-                st.error("Completa nombre, correo válido y una contraseña de mínimo 8 caracteres.")
-                return
-            try:
-                client = service_client()
-                created = client.auth.admin.create_user({"email": email.strip().lower(), "password": password, "email_confirm": True, "user_metadata": {"full_name": name.strip()}})
-                profile = {"id": created.user.id, "full_name": name.strip(), "role": "administrator"}
-                client.table("profiles").insert(profile).execute()
-                st.session_state.profile = profile
-                st.success("Administrador creado correctamente.")
-                st.rerun()
-            except Exception as error:
-                st.error(f"No fue posible crear el administrador: {error}")
+            submitted = st.form_submit_button("Crear administrador", type="primary", use_container_width=True)
+    if submitted:
+        if not hmac.compare_digest(setup_code, st.secrets["SETUP_CODE"]):
+            st.error("El código de configuración no es correcto.")
+            return
+        if not name.strip() or "@" not in email or len(password) < 8:
+            st.error("Completa nombre, correo válido y una contraseña de mínimo 8 caracteres.")
+            return
+        try:
+            client = service_client()
+            created = client.auth.admin.create_user({"email": email.strip().lower(), "password": password, "email_confirm": True, "user_metadata": {"full_name": name.strip()}})
+            profile = {"id": created.user.id, "full_name": name.strip(), "role": "administrator"}
+            client.table("profiles").insert(profile).execute()
+            st.session_state.profile = profile
+            st.success("Administrador creado correctamente.")
+            st.rerun()
+        except Exception as error:
+            st.error(f"No fue posible crear el administrador: {error}")
 
 
 def currency(value):
@@ -107,7 +265,7 @@ def payment_form(editing=None):
         reimbursement_status = a.selectbox("Estado de reembolso", ["Pendiente de reembolsar", "Reembolsado", "No aplica"], index=["Pendiente de reembolsar", "Reembolsado", "No aplica"].index(defaults.get("reimbursement_status", "Pendiente de reembolsar")))
         description = st.text_input("Concepto", value=defaults.get("description", ""), placeholder="Descripción del gasto")
         comments = st.text_area("Comentarios", value=defaults.get("comments") or "", placeholder="Factura, referencia u observaciones")
-        submitted = st.form_submit_button("Actualizar pago" if editing else "Guardar pago", use_container_width=True)
+        submitted = st.form_submit_button("Actualizar pago" if editing else "Guardar pago", type="primary", use_container_width=True)
     if submitted:
         if not beneficiary.strip() or not category.strip() or not description.strip() or amount <= 0:
             st.error("Completa beneficiario, valor, categoría y concepto.")
@@ -141,7 +299,7 @@ def to_excel(rows):
 
 def reports_page():
     st.subheader("Reportes y descarga")
-    c1, c2, _ = st.columns([1, 1, 3])
+    c1, c2 = st.columns(2)
     start_date = c1.date_input("Desde", value=date.today().replace(day=1))
     end_date = c2.date_input("Hasta", value=date.today())
     if end_date < start_date:
@@ -155,8 +313,21 @@ def reports_page():
         st.info("No hay movimientos en este período.")
         return
     columns = ["payment_date", "beneficiary", "description", "category", "amount", "accounting_status", "reimbursement_status"]
-    st.dataframe(display[columns].rename(columns={"payment_date": "Fecha", "beneficiary": "Beneficiario", "description": "Concepto", "category": "Categoría", "amount": "Valor", "accounting_status": "Estado contable", "reimbursement_status": "Reembolso"}), hide_index=True, use_container_width=True)
-    st.download_button("Descargar Excel actualizado", data=to_excel(rows), file_name=f"pagos-personales-{start_date}-a-{end_date}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
+    table = display[columns].rename(columns={"payment_date": "Fecha", "beneficiary": "Beneficiario", "description": "Concepto", "category": "Categoría", "amount": "Valor", "accounting_status": "Estado contable", "reimbursement_status": "Reembolso"})
+
+    def tint(value):
+        colors = {
+            "Contabilizado": "background-color: rgba(52,211,153,0.18); color: #6ee7b7;",
+            "Reembolsado": "background-color: rgba(52,211,153,0.18); color: #6ee7b7;",
+            "Pendiente de contabilizar": "background-color: rgba(251,191,36,0.18); color: #fcd34d;",
+            "Pendiente de reembolsar": "background-color: rgba(251,191,36,0.18); color: #fcd34d;",
+            "No aplica": "background-color: rgba(255,255,255,0.08); color: #cbd2e1;",
+        }
+        return colors.get(value, "")
+
+    styled = table.style.map(tint, subset=["Estado contable", "Reembolso"]).format({"Valor": currency})
+    st.dataframe(styled, hide_index=True, use_container_width=True)
+    st.download_button("⬇️ Descargar Excel actualizado", data=to_excel(rows), file_name=f"pagos-personales-{start_date}-a-{end_date}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
 
 
 def users_page():
@@ -166,7 +337,7 @@ def users_page():
         name = st.text_input("Nombre completo")
         email = st.text_input("Correo electrónico")
         password = st.text_input("Contraseña temporal", type="password", help="Mínimo 8 caracteres.")
-        submitted = st.form_submit_button("Crear usuario de consulta")
+        submitted = st.form_submit_button("Crear usuario de consulta", type="primary", use_container_width=True)
     if submitted:
         if not name.strip() or "@" not in email or len(password) < 8:
             st.error("Completa nombre, correo válido y una contraseña de mínimo 8 caracteres.")
@@ -178,14 +349,15 @@ def users_page():
             st.success("Usuario creado. Entrega su correo y contraseña por un canal seguro.")
         except Exception as error:
             st.error(f"No fue posible crear el usuario: {error}")
+    st.divider()
     users = service_client().table("profiles").select("full_name,role,created_at").order("created_at", desc=True).execute().data or []
     st.dataframe(pd.DataFrame(users).rename(columns={"full_name": "Nombre", "role": "Rol", "created_at": "Creado"}), hide_index=True, use_container_width=True)
 
 
 def administrator_page():
-    st.subheader("Registrar pago" if "editing" not in st.session_state else "Editar pago")
+    st.subheader("Editar pago" if "editing" in st.session_state else "Registrar pago")
     payment_form(st.session_state.get("editing"))
-    if "editing" in st.session_state and st.button("Cancelar edición"):
+    if "editing" in st.session_state and st.button("Cancelar edición", use_container_width=True):
         del st.session_state.editing
         st.rerun()
     st.divider()
@@ -195,18 +367,28 @@ def administrator_page():
         st.info("Aún no hay movimientos este mes.")
         return
     for row in rows:
-        left, middle, right = st.columns([5, 2, 2])
-        left.write(f"**{row['payment_date']} · {row['beneficiary']}**  \n{row['description']} · {row['category']}")
-        middle.write(currency(row["amount"]))
-        if right.button("Editar", key=f"edit-{row['id']}"):
-            st.session_state.editing = row
-            st.rerun()
-        if right.button("Eliminar", key=f"delete-{row['id']}"):
-            service_client().table("payments").delete().eq("id", row["id"]).execute()
-            st.rerun()
+        with st.container(border=True):
+            icon_col, info_col, amount_col = st.columns([0.6, 2.4, 1.2])
+            icon_col.markdown(avatar(row["beneficiary"]), unsafe_allow_html=True)
+            info_col.markdown(
+                f"<div style='font-weight:700;'>{row['beneficiary']}</div>"
+                f"<div style='color:#a79fc9; font-size:0.8rem;'>{row['payment_date']} · {row['category']}</div>",
+                unsafe_allow_html=True,
+            )
+            amount_col.markdown(f"<div style='text-align:right; font-size:1.2rem; font-weight:700;'>{currency(row['amount'])}</div>", unsafe_allow_html=True)
+            st.caption(row["description"])
+            st.markdown(status_badge(row["accounting_status"]) + status_badge(row["reimbursement_status"]), unsafe_allow_html=True)
+            b1, b2 = st.columns(2)
+            if b1.button("✏️ Editar", key=f"edit-{row['id']}", use_container_width=True):
+                st.session_state.editing = row
+                st.rerun()
+            if b2.button("🗑️ Eliminar", key=f"delete-{row['id']}", use_container_width=True):
+                service_client().table("payments").delete().eq("id", row["id"]).execute()
+                st.rerun()
 
 
 def app():
+    apply_style()
     if not configured():
         st.error("Falta configurar .streamlit/secrets.toml. Revisa el README.")
         st.stop()
@@ -217,20 +399,33 @@ def app():
         login_screen()
         return
     profile = st.session_state.profile
-    with st.sidebar:
-        st.title("💳 Pagos personales")
-        st.write(profile["full_name"])
-        st.caption("Administrador" if profile["role"] == "administrator" else "Consulta y descarga")
-        if st.button("Cerrar sesión", use_container_width=True):
-            st.session_state.clear()
-            st.rerun()
+    with st.container(border=True):
+        header, logout = st.columns([4, 1])
+        with header:
+            st.markdown(
+                f"""
+                <div style="display:flex; align-items:center; gap:0.8rem;">
+                    {avatar(profile['full_name'])}
+                    <div>
+                        <div style="font-weight:700; font-size:1.05rem; color:#f5f3ff;">{profile['full_name']}</div>
+                        <div style="color:#a79fc9; font-size:0.82rem;">{'Administrador' if profile['role'] == 'administrator' else 'Consulta y descarga'}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with logout:
+            if st.button("🚪", use_container_width=True, help="Cerrar sesión"):
+                st.session_state.clear()
+                st.rerun()
+    st.write("")
     if profile["role"] == "administrator":
-        page = st.sidebar.radio("Módulo", ["Gestión de pagos", "Reportes", "Usuarios"])
-        if page == "Gestión de pagos":
+        tab_pagos, tab_reportes, tab_usuarios = st.tabs(["Pagos", "Reportes", "Usuarios"])
+        with tab_pagos:
             administrator_page()
-        elif page == "Reportes":
+        with tab_reportes:
             reports_page()
-        else:
+        with tab_usuarios:
             users_page()
     else:
         reports_page()
