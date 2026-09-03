@@ -110,27 +110,36 @@ def apply_style():
             margin: 0.9rem 0 0.7rem 0;
         }
         .cc-number { font-size: 1.05rem; letter-spacing: 0.14em; font-weight: 600; z-index: 1; position: relative; color: #3b2b0a; }
-        .cc-foot { display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.85; z-index: 1; position: relative; color: #3b2b0a; margin-top: 0.6rem; }
+        .cc-foot { display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.85; z-index: 1; position: relative; margin-top: 0.6rem; }
+        .cc-foot span { color: #3b2b0a !important; }
 
-        div.st-key-login_card > div[data-testid="stVerticalBlockBorderWrapper"] {
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) {
             background: linear-gradient(135deg, #f7e7b0 0%, #e0bd6e 28%, #c79a3e 52%, #9c7423 76%, #6b4f16 100%) !important;
             border: none !important;
             box-shadow: 0 18px 38px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5) !important;
             border-radius: 20px !important;
         }
-        .st-key-login_card label p, .st-key-login_card p { color: #3b2b0a !important; font-weight: 600; }
-        .st-key-login_card div[data-baseweb="input"], .st-key-login_card div[data-baseweb="base-input"] {
-            background: rgba(255,255,255,0.4) !important;
-            border: 1px solid rgba(59,43,10,0.25) !important;
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) label p,
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) p {
+            color: #3b2b0a !important; font-weight: 600;
         }
-        .st-key-login_card input { color: #2b1e08 !important; caret-color: #2b1e08; }
-        .st-key-login_card div[data-testid="stFormSubmitButton"] > button {
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) div[data-baseweb="input"],
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) div[data-baseweb="base-input"] {
+            background: rgba(255,255,255,0.5) !important;
+            border: 1px solid rgba(59,43,10,0.3) !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) input {
+            color: #2b1e08 !important; caret-color: #2b1e08;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) div[data-testid="stFormSubmitButton"] > button {
             background: linear-gradient(135deg, #241c40, #0f0c1a) !important;
             color: #f5f3ff !important;
             border: none !important;
             box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
         }
-        .st-key-login_card [data-testid="stForm"] { border: none !important; background: transparent !important; padding-top: 0.4rem; }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.cc-brand) [data-testid="stForm"] {
+            border: none !important; background: transparent !important; padding-top: 0.4rem;
+        }
 
         .stTabs [data-baseweb="tab-list"] { gap: 0.4rem; background: rgba(255,255,255,0.04); padding: 0.3rem; border-radius: 14px; }
         .stTabs [data-baseweb="tab"] { border-radius: 10px; font-weight: 600; color: #b9b2d9; }
@@ -181,7 +190,7 @@ def get_profile(user_id):
 
 
 def login_screen():
-    with st.container(border=True, key="login_card"):
+    with st.container(border=True):
         st.markdown(
             """
             <div class="cc-row">
