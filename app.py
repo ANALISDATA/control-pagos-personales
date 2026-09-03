@@ -46,11 +46,16 @@ def apply_style():
             border: none;
             box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
         }
-        input, textarea, select { font-size: 1rem !important; }
-        div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="base-input"] {
-            background: rgba(255,255,255,0.05) !important;
+        input, textarea, select { font-size: 1rem !important; color: #f5f3ff !important; }
+        input::placeholder, textarea::placeholder { color: rgba(245,243,255,0.4) !important; }
+        div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="base-input"],
+        div[data-testid="stNumberInput"] > div, div[data-testid="stDateInput"] > div {
+            background: rgba(255,255,255,0.10) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
             border-radius: 10px !important;
         }
+        div[data-testid="stNumberInput"] button, div[data-testid="stDateInput"] svg { color: #f5f3ff !important; }
+        [data-baseweb="select"] span, [data-baseweb="select"] div { color: #f5f3ff !important; }
 
         [data-testid="stMetric"] {
             background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 55%, #4338ca 100%);
@@ -95,29 +100,37 @@ def apply_style():
             box-shadow: 0 8px 22px rgba(99, 102, 241, 0.4);
         }
 
-        .credit-card {
-            max-width: 360px; margin: 1.4rem auto 1.6rem auto; aspect-ratio: 1.586 / 1;
-            border-radius: 18px; padding: 1.3rem 1.5rem;
-            background: linear-gradient(135deg, #f7e7b0 0%, #e0bd6e 28%, #c79a3e 52%, #9c7423 76%, #6b4f16 100%);
-            box-shadow: 0 18px 38px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5);
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between;
-            color: #3b2b0a;
-        }
-        .credit-card::after {
-            content: ""; position: absolute; inset: 0;
-            background: linear-gradient(120deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 42%);
-        }
-        .credit-card .cc-row { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; }
-        .credit-card .cc-brand { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.02em; }
-        .credit-card .cc-sub { font-size: 0.62rem; letter-spacing: 0.14em; opacity: 0.75; margin-top: 0.1rem; }
-        .credit-card .cc-chip {
-            width: 2.3rem; height: 1.7rem; border-radius: 5px; z-index: 1;
+        .cc-row { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; position: relative; }
+        .cc-brand { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.02em; color: #3b2b0a; }
+        .cc-sub { font-size: 0.62rem; letter-spacing: 0.14em; opacity: 0.75; margin-top: 0.1rem; color: #3b2b0a; }
+        .cc-chip {
+            width: 2.3rem; height: 1.7rem; border-radius: 5px; z-index: 1; position: relative;
             background: linear-gradient(135deg, #fff3cf, #b8860b);
             border: 1px solid rgba(0,0,0,0.15);
+            margin: 0.9rem 0 0.7rem 0;
         }
-        .credit-card .cc-number { font-size: 1.05rem; letter-spacing: 0.14em; font-weight: 600; z-index: 1; }
-        .credit-card .cc-foot { display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.85; z-index: 1; }
+        .cc-number { font-size: 1.05rem; letter-spacing: 0.14em; font-weight: 600; z-index: 1; position: relative; color: #3b2b0a; }
+        .cc-foot { display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.85; z-index: 1; position: relative; color: #3b2b0a; margin-top: 0.6rem; }
+
+        div.st-key-login_card > div[data-testid="stVerticalBlockBorderWrapper"] {
+            background: linear-gradient(135deg, #f7e7b0 0%, #e0bd6e 28%, #c79a3e 52%, #9c7423 76%, #6b4f16 100%) !important;
+            border: none !important;
+            box-shadow: 0 18px 38px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+            border-radius: 20px !important;
+        }
+        .st-key-login_card label p, .st-key-login_card p { color: #3b2b0a !important; font-weight: 600; }
+        .st-key-login_card div[data-baseweb="input"], .st-key-login_card div[data-baseweb="base-input"] {
+            background: rgba(255,255,255,0.4) !important;
+            border: 1px solid rgba(59,43,10,0.25) !important;
+        }
+        .st-key-login_card input { color: #2b1e08 !important; caret-color: #2b1e08; }
+        .st-key-login_card div[data-testid="stFormSubmitButton"] > button {
+            background: linear-gradient(135deg, #241c40, #0f0c1a) !important;
+            color: #f5f3ff !important;
+            border: none !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
+        }
+        .st-key-login_card [data-testid="stForm"] { border: none !important; background: transparent !important; padding-top: 0.4rem; }
 
         .stTabs [data-baseweb="tab-list"] { gap: 0.4rem; background: rgba(255,255,255,0.04); padding: 0.3rem; border-radius: 14px; }
         .stTabs [data-baseweb="tab"] { border-radius: 10px; font-weight: 600; color: #b9b2d9; }
@@ -168,9 +181,9 @@ def get_profile(user_id):
 
 
 def login_screen():
-    st.markdown(
-        """
-        <div class="credit-card">
+    with st.container(border=True, key="login_card"):
+        st.markdown(
+            """
             <div class="cc-row">
                 <div>
                     <div class="cc-brand">ISTHO S.A.S.</div>
@@ -180,16 +193,13 @@ def login_screen():
             </div>
             <div class="cc-chip"></div>
             <div class="cc-number">•••• •••• •••• 0000</div>
-            <div class="cc-foot">
+            <div class="cc-foot" style="margin-bottom:0.6rem;">
                 <span>CONTROL DE PAGOS</span>
                 <span>PERSONALES</span>
             </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.write("")
-    with st.container(border=True):
+            """,
+            unsafe_allow_html=True,
+        )
         with st.form("login"):
             email = st.text_input("Correo electrónico")
             password = st.text_input("Contraseña", type="password")
