@@ -100,6 +100,8 @@ def apply_style():
 
         /* --- login card (front + revealed form share this look) --- */
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) {
+            position: relative;
+            overflow: hidden;
             border-radius: 20px;
             border: none !important;
             background:
@@ -111,6 +113,35 @@ def apply_style():
                 0 0 46px rgba(56, 189, 248, 0.25),
                 inset 0 1px 1px rgba(255,255,255,0.65) !important;
             padding: 1.4rem 1.5rem 1.6rem !important;
+            transition: box-shadow 0.3s ease, filter 0.3s ease;
+        }
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker):hover {
+            filter: brightness(1.08);
+            box-shadow:
+                0 34px 70px rgba(2, 20, 32, 0.6),
+                0 0 70px rgba(56, 189, 248, 0.5),
+                inset 0 1px 1px rgba(255,255,255,0.75) !important;
+        }
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker)::after {
+            content: "";
+            position: absolute;
+            top: -60%;
+            left: -30%;
+            width: 45%;
+            height: 220%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.85), transparent);
+            transform: translateX(-40%) rotate(12deg);
+            pointer-events: none;
+            animation: card-shine 3.2s ease-in-out infinite;
+            z-index: 5;
+        }
+        @keyframes card-shine {
+            0%   { transform: translateX(-40%) rotate(12deg); }
+            38%  { transform: translateX(360%) rotate(12deg); }
+            100% { transform: translateX(360%) rotate(12deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker)::after { animation: none; }
         }
         .cc-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .logo-crop { width: 108px; height: 43px; overflow: hidden; }
