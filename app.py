@@ -106,9 +106,10 @@ def apply_style():
             border-radius: 20px;
             border: none !important;
             background:
-                radial-gradient(ellipse 160% 70% at 22% -18%, rgba(255,255,255,0.55), transparent 55%),
-                repeating-conic-gradient(from 0deg at 50% 45%, rgba(255,255,255,0.06) 0deg 4deg, transparent 4deg 8deg),
+                radial-gradient(ellipse 160% 70% at 22% -18%, rgba(255,255,255,0.5), transparent 55%),
+                radial-gradient(rgba(255,255,255,0.16) 1.1px, transparent 1.6px),
                 linear-gradient(155deg, #eaf7ff 0%, #bfe8ff 14%, #7dd3fc 32%, #38bdf8 52%, #0ea5e9 72%, #0369a1 100%) !important;
+            background-size: auto, 15px 15px, auto;
             box-shadow:
                 0 30px 60px rgba(2, 20, 32, 0.55),
                 0 0 46px rgba(56, 189, 248, 0.25),
@@ -123,14 +124,14 @@ def apply_style():
                 0 0 70px rgba(56, 189, 248, 0.5),
                 inset 0 1px 1px rgba(255,255,255,0.75) !important;
         }
-        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker)::after {
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-front-active)::after {
             content: "";
             position: absolute;
             top: -60%;
             left: -30%;
             width: 45%;
             height: 220%;
-            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.85), transparent);
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.7), transparent);
             transform: translateX(-40%) rotate(12deg);
             pointer-events: none;
             animation: card-shine 3.2s ease-in-out infinite;
@@ -142,15 +143,24 @@ def apply_style():
             100% { transform: translateX(360%) rotate(12deg); }
         }
         @media (prefers-reduced-motion: reduce) {
-            div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker)::after { animation: none; }
+            div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-front-active)::after { animation: none; }
         }
-        .cc-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .cc-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
         .logo-crop { width: 108px; height: 43px; overflow: hidden; }
         .logo-crop img { width: 108px; height: auto; display: block; }
         .tier-tag {
-            font-size: 0.6rem; letter-spacing: 0.14em; font-weight: 800; color: #062a3f;
-            border: 1px solid rgba(6,42,63,0.35); border-radius: 999px; padding: 0.25rem 0.6rem;
-            background: rgba(255,255,255,0.18);
+            font-size: 0.68rem; letter-spacing: 0.14em; font-weight: 900; color: #4a3200;
+            border: none; border-radius: 999px; padding: 0.25rem 0.7rem;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24 55%, #b8860b);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+        .stripe-bar {
+            height: 2.6rem;
+            margin: -1.4rem -1.5rem 1.2rem -1.5rem;
+            background: repeating-linear-gradient(180deg, #0b0f14, #0b0f14 2px, #14181d 2px, #14181d 4px);
+            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 1;
         }
         .chip-row { display: flex; align-items: center; gap: 0.6rem; margin: 1.1rem 0 1.3rem; }
         .cc-chip {
@@ -203,9 +213,27 @@ def apply_style():
             color: #04202f !important; caret-color: #04202f;
         }
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-testid="stFormSubmitButton"] > button {
-            background: linear-gradient(135deg, #123246, #071620) !important;
-            color: #eaf6ff !important; border: none !important;
+            background:
+                repeating-linear-gradient(90deg,
+                    #0b0b0c 0px, #0b0b0c 3px, #ffffff 3px, #ffffff 5px,
+                    #0b0b0c 5px, #0b0b0c 6px, #ffffff 6px, #ffffff 10px,
+                    #0b0b0c 10px, #0b0b0c 13px, #ffffff 13px, #ffffff 14px
+                ) !important;
+            background-size: 40px 100% !important;
+            border: 1px solid rgba(0,0,0,0.3) !important;
             box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-testid="stFormSubmitButton"] > button p {
+            background: #ffffff !important;
+            color: #0b0b0c !important;
+            padding: 0.4rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 900 !important;
+            letter-spacing: 0.1em;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.3);
         }
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) [data-testid="stForm"] {
             border: none !important; background: transparent !important;
@@ -284,9 +312,10 @@ def login_screen():
         if not st.session_state.login_reveal:
             st.markdown(
                 f"""
+                <span class="cc-front-active" style="display:none"></span>
                 <div class="cc-row">
                     <div class="logo-crop"><img src="{LOGO_DATA_URI}" alt="ISTHO"></div>
-                    <div class="tier-tag">FINANCIERA</div>
+                    <div class="tier-tag">GOLD</div>
                 </div>
                 <div class="chip-row">
                     <div class="cc-chip"></div>
@@ -320,9 +349,10 @@ def login_screen():
         else:
             st.markdown(
                 f"""
+                <div class="stripe-bar"></div>
                 <div class="cc-row">
                     <div class="logo-crop"><img src="{LOGO_DATA_URI}" alt="ISTHO"></div>
-                    <div class="tier-tag">FINANCIERA</div>
+                    <div class="tier-tag">GOLD</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
