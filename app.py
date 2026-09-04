@@ -52,6 +52,8 @@ def apply_style():
         input, textarea, select { font-size: 1rem !important; color: #eaf6ff !important; }
         input::placeholder, textarea::placeholder { color: rgba(234,246,255,0.4) !important; }
         div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="base-input"],
+        div[data-testid="stTextInputRootElement"], div[data-testid="stTextAreaRootElement"],
+        div[data-testid="stNumberInputContainer"],
         div[data-testid="stNumberInput"] > div, div[data-testid="stDateInput"] > div {
             background: rgba(255,255,255,0.10) !important;
             border: 1px solid rgba(255,255,255,0.18) !important;
@@ -166,6 +168,15 @@ def apply_style():
             background: linear-gradient(135deg, #fef3c7, #fbbf24 55%, #b8860b);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
         }
+        .barcode-caption {
+            text-align: center;
+            font-size: 0.58rem;
+            letter-spacing: 0.14em;
+            color: #062a3f;
+            opacity: 0.6;
+            font-weight: 700;
+            margin: -0.4rem 0 0.5rem 0;
+        }
         .stripe-bar {
             height: 2.6rem;
             margin: -1.4rem -1.5rem 1.2rem -1.5rem;
@@ -217,23 +228,26 @@ def apply_style():
             color: #062a3f !important; font-weight: 600;
         }
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-baseweb="input"],
-        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-baseweb="base-input"] {
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-baseweb="base-input"],
+        div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-testid="stTextInputRootElement"] {
             background: rgba(255,255,255,0.55) !important;
             border: 1px solid rgba(6,42,63,0.3) !important;
+            box-shadow: none !important;
         }
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) input {
             color: #04202f !important; caret-color: #04202f;
         }
         div[data-testid="stVerticalBlock"]:has(> div[data-testid="stElementContainer"] .cc-card-marker) div[data-testid="stFormSubmitButton"] > button {
             background:
+                linear-gradient(90deg, #ffffff 0%, transparent 6%, transparent 94%, #ffffff 100%),
                 repeating-linear-gradient(90deg,
                     #0b0b0c 0px, #0b0b0c 3px, #ffffff 3px, #ffffff 5px,
                     #0b0b0c 5px, #0b0b0c 6px, #ffffff 6px, #ffffff 10px,
                     #0b0b0c 10px, #0b0b0c 13px, #ffffff 13px, #ffffff 14px
                 ) !important;
-            background-size: 40px 100% !important;
-            border: 1px solid rgba(0,0,0,0.3) !important;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
+            background-size: 100% 100%, 40px 100% !important;
+            border: 1px solid rgba(0,0,0,0.2) !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.4) !important;
             display: flex !important;
             align-items: center;
             justify-content: center;
@@ -366,7 +380,6 @@ def login_screen():
             st.markdown(
                 f"""
                 <div class="stripe-bar"></div>
-                <div class="cc-map-bg" style="background-image:url('{MAP_DATA_URI}');"></div>
                 <div class="cc-row">
                     <div class="logo-crop"><img src="{LOGO_DATA_URI}" alt="ISTHO"></div>
                     <div class="tier-tag">GOLD</div>
@@ -378,6 +391,7 @@ def login_screen():
             with st.form("login"):
                 email = st.text_input("Correo electrónico")
                 password = st.text_input("Contraseña", type="password")
+                st.markdown('<div class="barcode-caption">ESCANEA O TOCA PARA INGRESAR</div>', unsafe_allow_html=True)
                 submitted = st.form_submit_button("Ingresar", type="primary", use_container_width=True)
             if st.button("← Volver", use_container_width=True):
                 st.session_state.login_reveal = False
