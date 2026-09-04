@@ -1,4 +1,5 @@
 import io
+import re
 import hmac
 from datetime import date
 
@@ -60,6 +61,7 @@ def apply_style():
             border-radius: 10px !important;
         }
         div[data-testid="stNumberInput"] button, div[data-testid="stDateInput"] svg { color: #eaf6ff !important; }
+        div[data-testid="InputInstructions"] { display: none !important; }
         [data-baseweb="select"] span, [data-baseweb="select"] div { color: #eaf6ff !important; }
 
         [data-testid="stMetric"] {
@@ -455,21 +457,50 @@ def payments_between(start_date, end_date):
     return response.data or []
 
 
+def _format_money(value):
+    try:
+        n = int(round(float(value)))
+    except (TypeError, ValueError):
+        return ""
+    return f"{n:,}".replace(",", ".")
+
+
+def _parse_money(text):
+    digits = re.sub(r"\D", "", text or "")
+    return float(digits) if digits else 0.0
+
+
+def _reformat_valor_input():
+    st.session_state.valor_input = _format_money(_parse_money(st.session_state.get("valor_input", "")))
+
+
 def payment_form(editing=None):
     defaults = editing or {}
+    editing_id = defaults.get("id", "new")
+    if st.session_state.get("_valor_editing_id") != editing_id:
+        st.session_state._valor_editing_id = editing_id
+        st.session_state.valor_input = _format_money(defaults.get("amount", 0)) if defaults.get("amount") else ""
+
+    st.text_input(
+        "Valor", key="valor_input", on_change=_reformat_valor_input,
+        placeholder="0", help="Se formatea con puntos de miles al salir del campo.",
+    )
+
     with st.form("payment_form", clear_on_submit=editing is None):
-        a, b, c = st.columns(3)
+        a, b = st.columns(2)
         payment_date = a.date_input("Fecha del pago", value=date.fromisoformat(defaults.get("payment_date", str(date.today()))))
         beneficiary = b.text_input("Beneficiario", value=defaults.get("beneficiary", ""))
-        amount = c.number_input("Valor", min_value=0.0, step=1000.0, value=float(defaults.get("amount", 0)))
-        category = a.text_input("Categoría", value=defaults.get("category", ""), placeholder="Ej. Transporte")
-        payment_method = b.selectbox("Medio de pago", ["Cuenta personal", "Tarjeta personal", "Efectivo", "Otro"], index=["Cuenta personal", "Tarjeta personal", "Efectivo", "Otro"].index(defaults.get("payment_method", "Cuenta personal")))
-        accounting_status = c.selectbox("Estado contable", ["Pendiente de contabilizar", "Contabilizado"], index=0 if defaults.get("accounting_status", "Pendiente de contabilizar") == "Pendiente de contabilizar" else 1)
-        reimbursement_status = a.selectbox("Estado de reembolso", ["Pendiente de reembolsar", "Reembolsado", "No aplica"], index=["Pendiente de reembolsar", "Reembolsado", "No aplica"].index(defaults.get("reimbursement_status", "Pendiente de reembolsar")))
+        c, d = st.columns(2)
+        category = c.text_input("Categoría", value=defaults.get("category", ""), placeholder="Ej. Transporte")
+        payment_method = d.selectbox("Medio de pago", ["Cuenta personal", "Tarjeta personal", "Efectivo", "Otro"], index=["Cuenta personal", "Tarjeta personal", "Efectivo", "Otro"].index(defaults.get("payment_method", "Cuenta personal")))
+        e, f = st.columns(2)
+        accounting_status = e.selectbox("Estado contable", ["Pendiente de contabilizar", "Contabilizado"], index=0 if defaults.get("accounting_status", "Pendiente de contabilizar") == "Pendiente de contabilizar" else 1)
+        reimbursement_status = f.selectbox("Estado de reembolso", ["Pendiente de reembolsar", "Reembolsado", "No aplica"], index=["Pendiente de reembolsar", "Reembolsado", "No aplica"].index(defaults.get("reimbursement_status", "Pendiente de reembolsar")))
         description = st.text_input("Concepto", value=defaults.get("description", ""), placeholder="Descripción del gasto")
         comments = st.text_area("Comentarios", value=defaults.get("comments") or "", placeholder="Factura, referencia u observaciones")
         submitted = st.form_submit_button("Actualizar pago" if editing else "Guardar pago", type="primary", use_container_width=True)
     if submitted:
+        amount = _parse_money(st.session_state.get("valor_input", ""))
         if not beneficiary.strip() or not category.strip() or not description.strip() or amount <= 0:
             st.error("Completa beneficiario, valor, categoría y concepto.")
             return
@@ -484,6 +515,7 @@ def payment_form(editing=None):
         else:
             client.table("payments").insert(payload).execute()
             st.success("Pago guardado.")
+            st.session_state.valor_input = ""
 
 
 def to_excel(rows):
