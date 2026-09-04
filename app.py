@@ -17,6 +17,7 @@ def apply_style():
 
         html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
         #MainMenu, footer { visibility: hidden; }
+        header[data-testid="stHeader"] { background: transparent; }
         .stApp {
             background:
                 radial-gradient(ellipse 620px 460px at 50% 0%, rgba(56,189,248,0.14), transparent 62%),
